@@ -1,22 +1,14 @@
 package rabbitmq
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"strconv"
-	"time"
 
 	"github.com/streadway/amqp"
-	"github.com/zeetech-br/go-utils"
 )
 
 var rbtCount int = 0
 var rbtErrorCount int = 0
-
-func init() {
-	displayCounter()
-}
 
 //RegisterENV marca a connection string nas enviroments variables
 func RegisterENV(connectionString string) {
@@ -32,19 +24,6 @@ func GetChannel() (*amqp.Connection, *amqp.Channel) {
 	failOnError(err, "Failed to open a channel")
 
 	return conn, ch
-}
-
-func displayCounter() {
-	nextTime := time.Now().Truncate(time.Second * 10)
-	nextTime = nextTime.Add(time.Second * 10)
-	time.Sleep(time.Until(nextTime))
-
-	_rbtCount := utils.PadLeft(strconv.Itoa(rbtCount), " ", 8)
-	_rbtErrorCount := utils.PadLeft(strconv.Itoa(rbtErrorCount), " ", 8)
-
-	fmt.Printf("RbtQueue:  %v |\nErrQueue:  %v |\n\n", _rbtCount, _rbtErrorCount)
-
-	go displayCounter()
 }
 
 //ChannelToExchage lê um canal de string e envia os textos para a exchange
@@ -139,7 +118,7 @@ func ConsumeQueue(queue string) (*amqp.Connection, *amqp.Channel, <-chan amqp.De
 
 //ConsumeBroadcast retona um canal de leitura de broadcast de uma exchange\
 //**Importante:** A Exchange tem que ser do tipo FANOUT\
-//Envio a CONNECTION e o CHANNEL para poder fechar caso queira um consumo que não fique com a conexão aberta forever. defer conn.Close()
+//Envio a CONNECTION e o CHANNEL para poder fechar. defer conn.Close()
 func ConsumeBroadcast(exchange string) (*amqp.Connection, *amqp.Channel, <-chan amqp.Delivery) {
 	conn, ch := GetChannel()
 
@@ -178,6 +157,6 @@ func ConsumeBroadcast(exchange string) (*amqp.Connection, *amqp.Channel, <-chan 
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		log.Printf("%s: %s", msg, err)
+		log.Fatalf("%s: %s", msg, err)
 	}
 }

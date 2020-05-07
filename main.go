@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/streadway/amqp"
-	"gitlab.com/zeetech/bip/bip-gateway-udp/utils"
+	"github.com/zeetech-br/go-utils"
 )
 
 var rbtCount int = 0
